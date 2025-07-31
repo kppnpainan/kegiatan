@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Kegiatan</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #f5faff;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: 600;
+    }
+    input[type="date"] {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin: 0 10px;
+    }
+    button {
+      padding: 10px 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Data Kegiatan KPPN Painan</h2>
+
+    <div>
+      <label for="filterDate">Tampilkan data untuk tanggal:</label>
+      <input type="date" id="filterDate" />
+      <button onclick="fetchData()">Tampilkan</button>
+    </div>
+
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>Nama Kegiatan</th>
+          <th>Tanggal</th>
+          <th>Waktu</th>
+          <th>Metode</th>
+          <th>UIC</th>
+          <th>Tempat</th>
+          <th>Peserta</th>
+          <th>Keterangan</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const sheetURL = 'https://script.google.com/macros/s/AKfycbzrfI5ucFrwPk8tfGviG3uIBUdsLC2UjSI--6T_2XQttdHMEwnnN4csT5fxx5ye7BvQ/exec';
+
+    function formatTanggal(isoString) {
+      if (!isoString) return '-';
+      const date = new Date(isoString);
+      return date.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+
+    function formatWaktu(isoString) {
+      if (!isoString) return '-';
+      const date = new Date(isoString);
+      return date.toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+    }
+
+    function renderTempatCell(isi) {
+      if (!isi) return '-';
+      const trimmed = isi.trim();
+      if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+        return `<a href="${trimmed}" target="_blank" rel="noopener noreferrer">${trimmed}</a>`;
+      }
+      return trimmed;
+    }
+
+    async function fetchData() {
+      const date = document.getElementById('filterDate').value
+                  || new Date().toISOString().slice(0, 10);
+      const tableBody = document.querySelector('#dataTable tbody');
+      tableBody.innerHTML = '<tr><td colspan="8">Loading...</td></tr>';
+
+      try {
+        const res = await fetch(`${sheetURL}?tanggal=${date}`);
+        const data = await res.json();
+
+        if (!data || data.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="8">Tidak ada data pada tanggal tersebut.</td></tr>';
+          return;
+        }
+
+        tableBody.innerHTML = '';
+        data.forEach(row => {
+          tableBody.innerHTML += `
+            <tr>
+              <td>${row['Nama Rapat'] || '-'}</td>
+              <td>${formatTanggal(row['Tanggal'])}</td>
+              <td>${formatWaktu(row['Waktu'])}</td>
+              <td>${row['Metode'] || '-'}</td>
+              <td>${row['UIC'] || '-'}</td>
+              <td>${renderTempatCell(row['Tempat'])}</td>
+              <td>${row['Peserta'] || '-'}</td>
+              <td>${row['Keterangan'] || '-'}</td>
+            </tr>`;
+        });
+      } catch (err) {
+        tableBody.innerHTML = '<tr><td colspan="8">Gagal memuat data.</td></tr>';
+        console.error(err);
+      }
+    }
+
+    window.onload = () => {
+      document.getElementById('filterDate').value = new Date().toISOString().slice(0, 10);
+      fetchData();
+    }
+  </script>
+</body>
+</html>
