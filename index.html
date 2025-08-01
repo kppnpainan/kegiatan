@@ -50,9 +50,14 @@
       padding: 10px;
       border: 1px solid #ddd;
       text-align: left;
+      vertical-align: top;
     }
     th {
       background-color: #f1f1f1;
+    }
+    a {
+      color: #007bff;
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -86,17 +91,16 @@
   <script>
     const sheetURL = 'https://script.google.com/macros/s/AKfycbzrfI5ucFrwPk8tfGviG3uIBUdsLC2UjSI--6T_2XQttdHMEwnnN4csT5fxx5ye7BvQ/exec';
 
-    // Konversi UTC ke tanggal lokal (WIB)
     function convertUTCToLocalDateOnly(dateStr) {
       const utcDate = new Date(dateStr);
-      utcDate.setHours(utcDate.getHours() + 7); // konversi ke WIB
-      return utcDate.toISOString().slice(0, 10); // ambil tanggal saja
+      utcDate.setHours(utcDate.getHours() + 7);
+      return utcDate.toISOString().slice(0, 10);
     }
 
     function formatTanggal(isoString) {
       if (!isoString) return '-';
       const date = new Date(isoString);
-      date.setHours(date.getHours() + 7); // Sesuaikan ke WIB
+      date.setHours(date.getHours() + 7);
       return date.toLocaleDateString('id-ID', {
         day: '2-digit',
         month: '2-digit',
@@ -120,10 +124,14 @@
     function renderTempatCell(isi) {
       if (!isi) return '-';
       const trimmed = isi.trim();
-      if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-        return `<a href="${trimmed}" target="_blank" rel="noopener noreferrer">${trimmed}</a>`;
-      }
-      return trimmed;
+
+      // Regex ditingkatkan untuk domain dan subdomain dengan path
+      const domainRegex = /((?:https?:\/\/)?(?:[\w-]+\.)+[a-z]{2,}(?:\/[\w\-._~:/?#[\]@!$&'()*+,;=%]*)?)/gi;
+
+      return trimmed.replace(domainRegex, match => {
+        const url = match.startsWith('http') ? match : 'https://' + match;
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${match}</a>`;
+      });
     }
 
     async function fetchData() {
@@ -165,7 +173,6 @@
       }
     }
 
-    // Tampilkan data saat halaman dibuka
     window.onload = () => {
       const today = new Date();
       const iso = today.toISOString().slice(0, 10);
