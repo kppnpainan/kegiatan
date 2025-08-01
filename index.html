@@ -86,9 +86,17 @@
   <script>
     const sheetURL = 'https://script.google.com/macros/s/AKfycbzrfI5ucFrwPk8tfGviG3uIBUdsLC2UjSI--6T_2XQttdHMEwnnN4csT5fxx5ye7BvQ/exec';
 
+    // Konversi UTC ke tanggal lokal (WIB)
+    function convertUTCToLocalDateOnly(dateStr) {
+      const utcDate = new Date(dateStr);
+      utcDate.setHours(utcDate.getHours() + 7); // konversi ke WIB
+      return utcDate.toISOString().slice(0, 10); // ambil tanggal saja
+    }
+
     function formatTanggal(isoString) {
       if (!isoString) return '-';
       const date = new Date(isoString);
+      date.setHours(date.getHours() + 7); // Sesuaikan ke WIB
       return date.toLocaleDateString('id-ID', {
         day: '2-digit',
         month: '2-digit',
@@ -99,6 +107,9 @@
     function formatWaktu(isoString) {
       if (!isoString) return '-';
       const date = new Date(isoString);
+      if (isNaN(date.getTime())) {
+        return String(isoString).slice(0, 5) || '-';
+      }
       return date.toLocaleTimeString('id-ID', {
         hour: '2-digit',
         minute: '2-digit',
@@ -116,22 +127,26 @@
     }
 
     async function fetchData() {
-      const date = document.getElementById('filterDate').value
-                  || new Date().toISOString().slice(0, 10);
+      const date = document.getElementById('filterDate').value;
       const tableBody = document.querySelector('#dataTable tbody');
       tableBody.innerHTML = '<tr><td colspan="8">Loading...</td></tr>';
 
       try {
-        const res = await fetch(`${sheetURL}?tanggal=${date}`);
+        const res = await fetch(sheetURL);
         const data = await res.json();
 
-        if (!data || data.length === 0) {
+        const filteredData = data.filter(row => {
+          const rowDate = convertUTCToLocalDateOnly(row['Tanggal']);
+          return rowDate === date;
+        });
+
+        if (filteredData.length === 0) {
           tableBody.innerHTML = '<tr><td colspan="8">Tidak ada data pada tanggal tersebut.</td></tr>';
           return;
         }
 
         tableBody.innerHTML = '';
-        data.forEach(row => {
+        filteredData.forEach(row => {
           tableBody.innerHTML += `
             <tr>
               <td>${row['Nama Rapat'] || '-'}</td>
@@ -145,15 +160,18 @@
             </tr>`;
         });
       } catch (err) {
-        tableBody.innerHTML = '<tr><td colspan="8">Gagal memuat data.</td></tr>';
-        console.error(err);
+        tableBody.innerHTML = '<tr><td colspan="8">Gagal memuat data. Cek konsol untuk detail.</td></tr>';
+        console.error("Error fetching or processing data:", err);
       }
     }
 
+    // Tampilkan data saat halaman dibuka
     window.onload = () => {
-      document.getElementById('filterDate').value = new Date().toISOString().slice(0, 10);
+      const today = new Date();
+      const iso = today.toISOString().slice(0, 10);
+      document.getElementById('filterDate').value = iso;
       fetchData();
-    }
+    };
   </script>
 </body>
 </html>
