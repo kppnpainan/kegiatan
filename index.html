@@ -2,183 +2,280 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Data Kegiatan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uraian SPM - KPPN Painan</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: "Poppins", sans-serif;
       margin: 0;
-      background-color: #f5faff;
       padding: 20px;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    }
-    h2 {
-      text-align: center;
+      background-color: #f8f9ff;
       color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      background-color: #cbb8ff;
+      color: #3b2c8a;
+      padding: 15px 25px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 25px;
+      width: fit-content;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .container {
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
-    label {
-      font-weight: 600;
-    }
-    input[type="date"] {
-      padding: 8px 12px;
+
+    .toolbar input {
+      padding: 10px;
+      width: 90%;
+      max-width: 400px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      margin: 0 10px;
+      font-size: 16px;
+      background-color: #eaf2ff;
+      outline: none;
+      transition: 0.3s;
     }
-    button {
-      padding: 10px 16px;
-      background-color: #007bff;
+
+    .toolbar input:focus {
+      border-color: #6a5acd;
+      box-shadow: 0 0 5px rgba(106, 90, 205, 0.3);
+    }
+
+    .toolbar button {
+      background-color: #6a5acd;
       color: white;
       border: none;
-      border-radius: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
       cursor: pointer;
+      transition: 0.3s;
+      font-size: 14px;
     }
+
+    .toolbar button:hover {
+      background-color: #5848c2;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 10px;
     }
+
     th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
       text-align: left;
-      vertical-align: top;
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
     }
+
     th {
-      background-color: #f1f1f1;
+      background-color: #6a5acd;
+      color: white;
+      text-transform: uppercase;
+      cursor: pointer;
+      user-select: none;
     }
-    a {
-      color: #007bff;
-      text-decoration: underline;
+
+    tr:hover {
+      background-color: #f6f4ff;
+    }
+
+    th.sort-asc::after {
+      content: " ▲";
+      font-size: 12px;
+    }
+
+    th.sort-desc::after {
+      content: " ▼";
+      font-size: 12px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pagination button {
+      background-color: #6a5acd;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .pagination button:hover {
+      background-color: #5848c2;
+    }
+
+    .pagination button.active {
+      background-color: #3b2c8a;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      th, td {
+        padding: 10px;
+        font-size: 14px;
+      }
+      .toolbar input {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Data Kegiatan KPPN Painan</h2>
+  
 
-    <div>
-      <label for="filterDate">Tampilkan data untuk tanggal:</label>
-      <input type="date" id="filterDate" />
-      <button onclick="fetchData()">Tampilkan</button>
+  <div class="container">
+<center><h3>Uraian SPM - KPPN Painan</h3></center>
+    <div class="toolbar">
+      <input type="text" id="searchInput" placeholder="Cari data..." onkeyup="searchTable()" />
+      <button onclick="loadData()">🔄</button>
     </div>
 
     <table id="dataTable">
       <thead>
         <tr>
-          <th>Nama Kegiatan</th>
-          <th>Tanggal</th>
-          <th>Waktu</th>
-          <th>Metode</th>
-          <th>UIC</th>
-          <th>Tempat</th>
-          <th>Peserta</th>
-          <th>Keterangan</th>
+          <th onclick="sortTable(0)">No</th>
+          <th onclick="sortTable(1)">Jenis SPM</th>
+          <th onclick="sortTable(2)">Uraian SPM</th>
+          <th onclick="sortTable(3)">Kode SPM</th>
+          <th onclick="sortTable(4)">Lampiran</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
+
+    <div class="pagination" id="pagination"></div>
   </div>
 
   <script>
-    const sheetURL = 'https://script.google.com/macros/s/AKfycbzrfI5ucFrwPk8tfGviG3uIBUdsLC2UjSI--6T_2XQttdHMEwnnN4csT5fxx5ye7BvQ/exec';
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9rpiZERWRHlmYPkrPt5GlfIF_54SGlS4-Q5w0jrRfWcBNV6-XKPrNCAgdlhL7nAKk/exec";
+    let currentData = [];
+    let filteredData = [];
+    let sortDirection = {};
+    let currentPage = 1;
+    const rowsPerPage = 5;
 
-    function convertUTCToLocalDateOnly(dateStr) {
-      const utcDate = new Date(dateStr);
-      utcDate.setHours(utcDate.getHours() + 7);
-      return utcDate.toISOString().slice(0, 10);
-    }
-
-    function formatTanggal(isoString) {
-      if (!isoString) return '-';
-      const date = new Date(isoString);
-      date.setHours(date.getHours() + 7);
-      return date.toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
-    }
-
-    function formatWaktu(isoString) {
-      if (!isoString) return '-';
-      const date = new Date(isoString);
-      if (isNaN(date.getTime())) {
-        return String(isoString).slice(0, 5) || '-';
-      }
-      return date.toLocaleTimeString('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      });
-    }
-
-    function renderTempatCell(isi) {
-      if (!isi) return '-';
-      const trimmed = isi.trim();
-
-      // Regex ditingkatkan untuk domain dan subdomain dengan path
-      const domainRegex = /((?:https?:\/\/)?(?:[\w-]+\.)+[a-z]{2,}(?:\/[\w\-._~:/?#[\]@!$&'()*+,;=%]*)?)/gi;
-
-      return trimmed.replace(domainRegex, match => {
-        const url = match.startsWith('http') ? match : 'https://' + match;
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${match}</a>`;
-      });
-    }
-
-    async function fetchData() {
-      const date = document.getElementById('filterDate').value;
-      const tableBody = document.querySelector('#dataTable tbody');
-      tableBody.innerHTML = '<tr><td colspan="8">Loading...</td></tr>';
+    async function loadData() {
+      const btn = document.querySelector(".toolbar button");
+      btn.disabled = true;
+      btn.textContent = "⏳";
 
       try {
-        const res = await fetch(sheetURL);
-        const data = await res.json();
-
-        const filteredData = data.filter(row => {
-          const rowDate = convertUTCToLocalDateOnly(row['Tanggal']);
-          return rowDate === date;
-        });
-
-        if (filteredData.length === 0) {
-          tableBody.innerHTML = '<tr><td colspan="8">Tidak ada data pada tanggal tersebut.</td></tr>';
-          return;
-        }
-
-        tableBody.innerHTML = '';
-        filteredData.forEach(row => {
-          tableBody.innerHTML += `
-            <tr>
-              <td>${row['Nama Rapat'] || '-'}</td>
-              <td>${formatTanggal(row['Tanggal'])}</td>
-              <td>${formatWaktu(row['Waktu'])}</td>
-              <td>${row['Metode'] || '-'}</td>
-              <td>${row['UIC'] || '-'}</td>
-              <td>${renderTempatCell(row['Tempat'])}</td>
-              <td>${row['Peserta'] || '-'}</td>
-              <td>${row['Keterangan'] || '-'}</td>
-            </tr>`;
-        });
-      } catch (err) {
-        tableBody.innerHTML = '<tr><td colspan="8">Gagal memuat data. Cek konsol untuk detail.</td></tr>';
-        console.error("Error fetching or processing data:", err);
+        const response = await fetch(SCRIPT_URL);
+        const data = await response.json();
+        currentData = data.slice(1);
+        filteredData = currentData;
+        currentPage = 1;
+        renderTable(filteredData);
+      } catch (error) {
+        console.error("Gagal memuat data:", error);
+        alert("Terjadi kesalahan saat memuat data.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "🔄";
       }
     }
 
-    window.onload = () => {
-      const today = new Date();
-      const iso = today.toISOString().slice(0, 10);
-      document.getElementById('filterDate').value = iso;
-      fetchData();
-    };
+    function renderTable(rows) {
+      const tbody = document.querySelector("#dataTable tbody");
+      tbody.innerHTML = "";
+
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const paginatedRows = rows.slice(start, end);
+
+      paginatedRows.forEach((row, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${start + index + 1}</td>
+          <td>${row[1] || ""}</td>
+          <td>${row[2] || ""}</td>
+          <td>${row[3] || ""}</td>
+          <td>${row[4] || ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      renderPagination(rows.length);
+    }
+
+    function renderPagination(totalRows) {
+      const totalPages = Math.ceil(totalRows / rowsPerPage);
+      const pagination = document.getElementById("pagination");
+      pagination.innerHTML = "";
+
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        if (i === currentPage) btn.classList.add("active");
+        btn.addEventListener("click", () => {
+          currentPage = i;
+          renderTable(filteredData);
+        });
+        pagination.appendChild(btn);
+      }
+    }
+
+    function searchTable() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      filteredData = currentData.filter(row =>
+        row.some(cell => (cell || "").toString().toLowerCase().includes(input))
+      );
+      currentPage = 1;
+      renderTable(filteredData);
+    }
+
+    function sortTable(colIndex) {
+      const headers = document.querySelectorAll("th");
+      headers.forEach(h => h.classList.remove("sort-asc", "sort-desc"));
+
+      sortDirection[colIndex] = !sortDirection[colIndex];
+      const direction = sortDirection[colIndex] ? 1 : -1;
+
+      filteredData.sort((a, b) => {
+        const valA = a[colIndex - 1] ? a[colIndex - 1].toString().toLowerCase() : "";
+        const valB = b[colIndex - 1] ? b[colIndex - 1].toString().toLowerCase() : "";
+        return valA.localeCompare(valB) * direction;
+      });
+
+      renderTable(filteredData);
+      headers[colIndex].classList.add(sortDirection[colIndex] ? "sort-asc" : "sort-desc");
+    }
+
+    loadData();
   </script>
 </body>
 </html>
