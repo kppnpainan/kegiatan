@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Tambah Data</title>
+<title>Ubah Data</title>
 <style>
 body{font-family:Arial;margin:30px}
 form{max-width:500px;margin:auto}
@@ -13,9 +13,10 @@ button{padding:8px 14px}
 </head>
 
 <body>
-<h2 align="center">Tambah Data Pejabat</h2>
+<h2 align="center">Ubah Data Pejabat</h2>
 
-<form onsubmit="simpan();return false;">
+<form onsubmit="update();return false;">
+<input type="hidden" id="row">
 
 <label>Jabatan Perbendaharaan</label>
 <select id="jabatan">
@@ -23,7 +24,7 @@ button{padding:8px 14px}
   <option>PPK</option>
   <option>PPSPM</option>
   <option>BPG</option>
-  <option>BP</option>
+   <option>BP</option>
 </select>
 
 <label>Kode Satker</label>
@@ -57,31 +58,45 @@ button{padding:8px 14px}
 <label>No HP</label>
 <input id="no_hp">
 
-<button type="submit">💾 Simpan</button>
+<button type="submit">💾 Update</button>
 <button type="button" onclick="kembali()">↩ Kembali</button>
 </form>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwJp0ElQxY0chYj8FpksBCtNq-ZjYwVLdZxR8jsE9H1wtNCUwcszFr2JOJmWlmxC7aiHA/exec";
+const rowId = new URLSearchParams(location.search).get("row");
+row.value = rowId;
 
-/* LOAD SATKER */
-fetch(API_URL + "?action=satker")
+/* LOAD SATKER → LALU DATA */
+fetch(API_URL+"?action=satker")
 .then(r=>r.json())
-.then(d=>{
-  let o='<option value="">-- Pilih Satker --</option>';
-  d.forEach(s=>o+=`<option value="${s.kode}">${s.kode} - ${s.nama}</option>`);
+.then(s=>{
+  let o="";
+  s.forEach(x=>o+=`<option value="${x.kode}">${x.kode} - ${x.nama}</option>`);
   kode_satker.innerHTML=o;
+
+  fetch(API_URL+`?action=get&row=${rowId}`)
+  .then(r=>r.json())
+  .then(d=>{
+    jabatan.value = d.jabatan;
+    kode_satker.value = d.kode_satker;
+    nama.value = d.nama;
+    nip.value = d.nip;
+    jenis.value = d.jenis;
+    no_sk.value = d.no_sk;
+    tgl_sk.value = d.tgl_sk?.substring(0,10) || "";
+    no_sertifikat.value = d.no_sertifikat;
+    tgl_sertifikat.value = d.tgl_sertifikat?.substring(0,10) || "";
+    no_hp.value = d.no_hp;
+  });
 });
 
-/* SET JABATAN DARI INDEX */
-const p = new URLSearchParams(location.search);
-if (p.get("jabatan")) jabatan.value = p.get("jabatan");
-
-function simpan(){
+function update(){
   fetch(API_URL,{
     method:"POST",
     body:JSON.stringify({
-      action:"insert",
+      action:"update",
+      row: row.value,
       jabatan: jabatan.value,
       kode_satker: kode_satker.value,
       nama: nama.value,
@@ -94,7 +109,7 @@ function simpan(){
       jenis: jenis.value
     })
   }).then(()=>{
-    alert("Data berhasil disimpan");
+    alert("Data berhasil diperbarui");
     kembali();
   });
 }
