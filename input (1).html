@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Form Input Kegiatan</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f8fbff, #e2ecf6);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 15px;
+      display: block;
+      color: #444;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px 14px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .save-btn {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .save-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .view-btn {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .view-btn:hover {
+      background-color: #1e7e34;
+    }
+
+    @media (max-width: 600px) {
+      .buttons {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Form Input Kegiatan</h2>
+    <form id="rapatForm">
+      <label for="namaRapat">Nama Kegiatan</label>
+      <textarea id="namaRapat" rows="3" required placeholder="Masukkan nama kegiatan..."></textarea>
+
+      <label for="tanggal">Tanggal</label>
+      <input type="date" id="tanggal" required />
+
+      <label for="waktu">Waktu</label>
+      <input type="time" id="waktu" required />
+
+      <label for="metode">Metode</label>
+      <select id="metode" required>
+        <option value="">-- Pilih Metode --</option>
+        <option value="Zoom">Zoom</option>
+        <option value="Teams">Teams</option>
+        <option value="Offline">Offline</option>
+      </select>
+
+      <label for="uic">UIC</label>
+      <input type="text" id="uic" placeholder="Masukkan UIC" required />
+
+      <label for="tempat">Tempat</label>
+	<input type="text" id="tempat" placeholder="Masukkan tempat atau link rapat..." required />
+
+
+      <label for="peserta">Peserta</label>
+      <textarea id="peserta" rows="2" required placeholder="Masukkan daftar peserta..."></textarea>
+
+      <label for="keterangan">Keterangan</label>
+      <textarea id="keterangan" rows="2" placeholder="Masukkan keterangan tambahan..."></textarea>
+
+      <div class="buttons">
+        <button type="submit" class="save-btn">Simpan Data</button>
+        <button type="button" class="view-btn" onclick="window.open('index.html', '_blank')">Tayang</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzrfI5ucFrwPk8tfGviG3uIBUdsLC2UjSI--6T_2XQttdHMEwnnN4csT5fxx5ye7BvQ/exec';
+
+    document.getElementById('rapatForm').addEventListener('submit', e => {
+      e.preventDefault();
+
+      const data = {
+        namaRapat: document.getElementById('namaRapat').value,
+        tanggal: document.getElementById('tanggal').value,
+        waktu: document.getElementById('waktu').value,
+        metode: document.getElementById('metode').value,
+        uic: document.getElementById('uic').value,
+        tempat: document.getElementById('tempat').value,
+        peserta: document.getElementById('peserta').value,
+        keterangan: document.getElementById('keterangan').value
+      };
+
+      fetch(scriptURL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(() => alert('✅ Data berhasil disimpan!'))
+      .catch(error => alert('❌ Gagal menyimpan data: ' + error));
+    });
+  </script>
+</body>
+</html>
