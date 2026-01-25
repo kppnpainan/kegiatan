@@ -1,107 +1,166 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Tambah Data</title>
-<style>
-body{font-family:Arial;margin:30px}
-form{max-width:500px;margin:auto}
-label{font-weight:bold}
-input,select{width:100%;padding:6px;margin-bottom:10px}
-button{padding:8px 14px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Form Input Kegiatan</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f8fbff, #e2ecf6);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 15px;
+      display: block;
+      color: #444;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px 14px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .save-btn {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .save-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .view-btn {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .view-btn:hover {
+      background-color: #1e7e34;
+    }
+
+    @media (max-width: 600px) {
+      .buttons {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
 </head>
-
 <body>
-<h2 align="center">Tambah Data Pejabat</h2>
+  <div class="container">
+    <h2>Form Input Kegiatan</h2>
+    <form id="rapatForm">
+      <label for="namaRapat">Nama Kegiatan</label>
+      <textarea id="namaRapat" rows="3" required placeholder="Masukkan nama kegiatan..."></textarea>
 
-<form onsubmit="simpan();return false;">
+      <label for="tanggal">Tanggal</label>
+      <input type="date" id="tanggal" required />
 
-<label>Jabatan Perbendaharaan</label>
-<select id="jabatan">
-  <option>KPA</option>
-  <option>PPK</option>
-  <option>PPSPM</option>
-  <option>BPG</option>
-  <option>BP</option>
-</select>
+      <label for="waktu">Waktu</label>
+      <input type="time" id="waktu" required />
 
-<label>Kode Satker</label>
-<select id="kode_satker"></select>
+      <label for="metode">Metode</label>
+      <select id="metode" required>
+        <option value="">-- Pilih Metode --</option>
+        <option value="Zoom">Zoom</option>
+        <option value="Teams">Teams</option>
+        <option value="Offline">Offline</option>
+      </select>
 
-<label>Nama</label>
-<input id="nama" required>
+      <label for="uic">UIC</label>
+      <input type="text" id="uic" placeholder="Masukkan UIC" required />
 
-<label>NIP</label>
-<input id="nip">
+      <label for="tempat">Tempat</label>
+	<input type="text" id="tempat" placeholder="Masukkan tempat atau link rapat..." required />
 
-<label>Jenis Jabatan</label>
-<select id="jenis">
-  <option>Struktural</option>
-  <option>Fungsional</option>
-  <option>Pelaksana</option>
-</select>
 
-<label>No SK</label>
-<input id="no_sk">
+      <label for="peserta">Peserta</label>
+      <textarea id="peserta" rows="2" required placeholder="Masukkan daftar peserta..."></textarea>
 
-<label>Tanggal SK</label>
-<input type="date" id="tgl_sk">
+      <label for="keterangan">Keterangan</label>
+      <textarea id="keterangan" rows="2" placeholder="Masukkan keterangan tambahan..."></textarea>
 
-<label>No Sertifikat</label>
-<input id="no_sertifikat">
+      <div class="buttons">
+        <button type="submit" class="save-btn">Simpan Data</button>
+        <button type="button" class="view-btn" onclick="window.open('index.html', '_blank')">Tayang</button>
+      </div>
+    </form>
+  </div>
 
-<label>Tanggal Sertifikat</label>
-<input type="date" id="tgl_sertifikat">
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzrfI5ucFrwPk8tfGviG3uIBUdsLC2UjSI--6T_2XQttdHMEwnnN4csT5fxx5ye7BvQ/exec';
 
-<label>No HP</label>
-<input id="no_hp">
+    document.getElementById('rapatForm').addEventListener('submit', e => {
+      e.preventDefault();
 
-<button type="submit">💾 Simpan</button>
-<button type="button" onclick="kembali()">↩ Kembali</button>
-</form>
+      const data = {
+        namaRapat: document.getElementById('namaRapat').value,
+        tanggal: document.getElementById('tanggal').value,
+        waktu: document.getElementById('waktu').value,
+        metode: document.getElementById('metode').value,
+        uic: document.getElementById('uic').value,
+        tempat: document.getElementById('tempat').value,
+        peserta: document.getElementById('peserta').value,
+        keterangan: document.getElementById('keterangan').value
+      };
 
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwJp0ElQxY0chYj8FpksBCtNq-ZjYwVLdZxR8jsE9H1wtNCUwcszFr2JOJmWlmxC7aiHA/exec";
-
-/* LOAD SATKER */
-fetch(API_URL + "?action=satker")
-.then(r=>r.json())
-.then(d=>{
-  let o='<option value="">-- Pilih Satker --</option>';
-  d.forEach(s=>o+=`<option value="${s.kode}">${s.kode} - ${s.nama}</option>`);
-  kode_satker.innerHTML=o;
-});
-
-/* SET JABATAN DARI INDEX */
-const p = new URLSearchParams(location.search);
-if (p.get("jabatan")) jabatan.value = p.get("jabatan");
-
-function simpan(){
-  fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"insert",
-      jabatan: jabatan.value,
-      kode_satker: kode_satker.value,
-      nama: nama.value,
-      nip: nip.value,
-      no_sk: no_sk.value,
-      tgl_sk: tgl_sk.value,
-      no_sertifikat: no_sertifikat.value,
-      tgl_sertifikat: tgl_sertifikat.value,
-      no_hp: no_hp.value,
-      jenis: jenis.value
-    })
-  }).then(()=>{
-    alert("Data berhasil disimpan");
-    kembali();
-  });
-}
-
-function kembali(){
-  location.href="index.html";
-}
-</script>
+      fetch(scriptURL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(() => alert('✅ Data berhasil disimpan!'))
+      .catch(error => alert('❌ Gagal menyimpan data: ' + error));
+    });
+  </script>
 </body>
 </html>
